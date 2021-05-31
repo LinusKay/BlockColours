@@ -12,9 +12,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.awt.Color;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.DuplicateFormatFlagsException;
-import java.util.List;
+import java.util.*;
 
 public class BlockColour implements CommandExecutor {
 
@@ -39,15 +37,15 @@ public class BlockColour implements CommandExecutor {
         String itemColour = blockColours.getString(itemType);
         Color firstColour = Color.decode(itemColour);
 
-        if(args.length > 0){
+        if (args.length > 0) {
             String command = args[0];
-            if(command.equals("similar")){
+            if (command.equals("similar")) {
                 int minDifference = 0;
                 int maxDifference = 30;
-                if(args.length > 1){
+                if (args.length > 1) {
                     minDifference = Integer.parseInt(args[1]);
                 }
-                if(args.length > 2){
+                if (args.length > 2) {
                     maxDifference = Integer.parseInt(args[2]);
                 }
                 gui = new BlockGUI(27, "Similar Blocks");
@@ -55,21 +53,20 @@ public class BlockColour implements CommandExecutor {
                     String colourString = blockColours.getString(block);
                     Color secondColour = Color.decode(colourString);
 
-                    double difference = compareColours(firstColour, secondColour);
+                    double difference = calculateColourDifference(firstColour, secondColour);
                     if (difference >= minDifference && difference < maxDifference) {
                         items.add(block);
                     }
                 }
                 generateGUI(items);
                 gui.openInventory(player);
-            }
-            else if(command.equals("different")){
+            } else if (command.equals("different")) {
                 int minDifference = 225;
                 int maxDifference = 255;
-                if(args.length > 1){
+                if (args.length > 1) {
                     minDifference = Integer.parseInt(args[1]);
                 }
-                if(args.length > 2){
+                if (args.length > 2) {
                     maxDifference = Integer.parseInt(args[2]);
                 }
                 gui = new BlockGUI(27, "Different Blocks");
@@ -77,8 +74,24 @@ public class BlockColour implements CommandExecutor {
                     String colourString = blockColours.getString(block);
                     Color secondColour = Color.decode(colourString);
 
-                    double difference = compareColours(firstColour, secondColour);
+                    double difference = calculateColourDifference(firstColour, secondColour);
                     if (difference >= minDifference && difference < maxDifference) {
+                        items.add(block);
+                    }
+                }
+                generateGUI(items);
+                gui.openInventory(player);
+            }
+            else if(command.equals("complement")){
+                Color complementary = calculateComplementaryColour(firstColour);
+
+                gui = new BlockGUI(27, "Complementary Blocks");
+                for (String block : blockColours.getConfigurationSection("").getKeys(false)) {
+                    String colourString = blockColours.getString(block);
+                    Color secondColour = Color.decode(colourString);
+
+                    double difference = calculateColourDifference(complementary, secondColour);
+                    if (difference >= 0 && difference < 100) {
                         items.add(block);
                     }
                 }
@@ -98,7 +111,7 @@ public class BlockColour implements CommandExecutor {
      * @param secondColour Second Color object to compare
      * @return value of colour difference
      */
-    public double compareColours(Color firstColour, Color secondColour) {
+    public double calculateColourDifference(Color firstColour, Color secondColour) {
         int r1 = firstColour.getRed();
         int g1 = firstColour.getGreen();
         int b1 = firstColour.getBlue();
@@ -109,11 +122,29 @@ public class BlockColour implements CommandExecutor {
     }
 
     /**
+     * Calculate the block colour's complementary colour
+     * Based on code by Poypoyan on https://stackoverflow.com/a/37675777
+     *
+     * @param firstColour
+     */
+    public Color calculateComplementaryColour(Color firstColour) {
+        int r1 = firstColour.getRed();
+        int g1 = firstColour.getGreen();
+        int b1 = firstColour.getBlue();
+        int r2 = (Math.max(Math.max(r1, g1), b1) + Math.min(Math.min(r1, g1), b1)) - r1;
+        int g2 = (Math.max(Math.max(r1, g1), b1) + Math.min(Math.min(r1, g1), b1)) - g1;
+        int b2 = (Math.max(Math.max(r1, g1), b1) + Math.min(Math.min(r1, g1), b1)) - b1;
+        Color color =  new Color(r2, g2, b2);
+        return color;
+    }
+
+    /**
      * Pass items into gui
      *
      * @param items
      */
     public void generateGUI(List<String> items) {
+        Collections.sort(items);
         for (String item : items) {
             try {
                 gui.addItem(new ItemStack(Material.getMaterial(item.toUpperCase()), 1));

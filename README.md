@@ -4,11 +4,12 @@ A plugin that allows players to perform operations revolving around the colours 
 This currently includes:
 * Find blocks with similar colours
 * Find blocks with very different colours
+* Find blocks with complementary colours
   
 ![gif displaying get similar blocks command](https://media4.giphy.com/media/QS0kTd0emYHyoSl8jF/giphy.gif)
 
 ![gif displaying get different blocks command](https://media2.giphy.com/media/PCCrkbPJZyU87A8Kkp/giphy.gif)
 
 To-Do
-* Find blocks with complementary colours
+* Sort blocks by difference value
 * Expand block colour data
