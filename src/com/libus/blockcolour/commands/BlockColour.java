@@ -84,14 +84,15 @@ public class BlockColour implements CommandExecutor {
                 }
                 generateGUI(items);
                 gui.openInventory(player);
-                items.clear();
             }
         }
+        items.clear();
         return true;
     }
 
     /**
      * Compare the difference between two given colours
+     * Based on code by Hovercraft Full Of Eels on https://stackoverflow.com/a/8688777
      *
      * @param firstColour  First Color object to compare
      * @param secondColour Second Color object to compare
