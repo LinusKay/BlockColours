@@ -1,0 +1,10 @@
+name: blockcolour
+version: 1.0
+author: libus
+main: com.libus.blockcolour.Main
+api-version: 1.16
+commands:
+  compareblock:
+    description: Get and compare block colour
+    usage: /compareblock <similar|different>
+    aliases: [cb]

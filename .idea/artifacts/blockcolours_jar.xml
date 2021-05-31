@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="blockcolours:jar">
+    <output-path>$PROJECT_DIR$/../server/plugins</output-path>
+    <root id="archive" name="blockcolours.jar">
+      <element id="module-output" name="blockcolours" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../dependencies/spigot-api-1.16.5.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>
