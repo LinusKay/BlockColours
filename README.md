@@ -10,6 +10,8 @@ This currently includes:
 
 ![gif displaying get different blocks command](https://media2.giphy.com/media/PCCrkbPJZyU87A8Kkp/giphy.gif)
 
+![gif displaying get complementary blocks command](https://media.giphy.com/media/0POvxsHg8DFsRMIyO5/giphy.gif)
+
 To-Do
 * Sort blocks by difference value
 * Expand block colour data
