@@ -26,6 +26,7 @@ Find blocks with a similar colour base to the held block. The min/max Difference
 */blockcolour similar 0 30 24 27* - Demonstration of a limited search, finding only blocks with a difference value between 0 and 30, excluding all blocks with a difference value between 24 and 27.
 
 
+
 ---
 
 \
@@ -44,6 +45,20 @@ Rather than displaying blocks based upon how similar they are to the held block,
 \
 ![image displaying limited complementary search](https://i.imgur.com/CJsH94Z.png)
 */blockcolour complementary 0 30 43 78* - Demonstration of a limited search, finding only blocks with a difference value between 0 and 100, excluding all blocks with a difference value between 43 and 78.
+
+---
+
+**/blockcolor gradient [\<startingSlot> \<endingSlot> | \<startingBlockName> \<endingBlockName>] [gradientSize]**
+
+Generate a gradient of blocks between two given blocks. If no arguments given, will create gradient between off-hand and main hand blocks. Alternatively, player can specify the hotbar slots the two items they wish to use are in, or specify two blocks by name. The gradientSize parameter specifies how many blocks long the gradient should be. Gradients use a separate file, consisting of only full blocks.
+
+\
+![image displaying gradient example](https://i.imgur.com/rMrlobo.png)
+*/blockcolour gradient 2 7 9* - Demonstration of a 9-block gradient, between blocks in slot 2 and 7.
+
+\
+![image displaying gradient example](https://i.imgur.com/rclF645.png)
+*/blockcolour gradient 1 3 23* - Demonstration of a 23-block gradient, between blocks in slot 1 and 3.
 
 ---
 

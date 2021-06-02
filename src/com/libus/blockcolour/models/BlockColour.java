@@ -3,12 +3,15 @@ package com.libus.blockcolour.models;
 import com.libus.blockcolour.Main;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import java.awt.Color;
+import java.awt.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+/**
+ * Would be wise to move a large number of methods into a separate ColourUtils class
+ */
 public class BlockColour {
 
     private Main plugin;

@@ -1,6 +1,7 @@
 package com.libus.blockcolour.commands;
 
 import com.libus.blockcolour.models.BlockColour;
+import com.libus.blockcolour.util.BlockColourUtils;
 import com.libus.blockcolour.util.BlockGUI;
 import com.libus.blockcolour.Main;
 import org.bukkit.command.CommandExecutor;
@@ -26,14 +27,10 @@ public class Commands implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, org.bukkit.command.Command cmd, String label, String[] args) {
         Player player = (Player) sender;
-        ItemStack item = player.getInventory().getItemInMainHand();
-        String itemType = item.getType().toString().toLowerCase();
 
         File colourFile = new File(plugin.getDataFolder() + "/blocks.yml");
         YamlConfiguration blockColours = YamlConfiguration.loadConfiguration(colourFile);
 
-        BlockColour block = new BlockColour(plugin);
-        block.setColourFromHex(blockColours.getString(itemType));
 
         if (args.length > 0) {
             String command = args[0];
@@ -43,6 +40,10 @@ public class Commands implements CommandExecutor {
             Find blocks with colours similar to held block
              */
             if (command.equals("similar")) {
+                ItemStack item = player.getInventory().getItemInMainHand();
+                String itemType = item.getType().toString().toLowerCase();
+                BlockColour block = new BlockColour(plugin);
+                block.setColourFromHex(blockColours.getString(itemType));
                 int minDifference = 0;
                 int maxDifference = 100;
                 if(args.length > 2){
@@ -67,6 +68,11 @@ public class Commands implements CommandExecutor {
             In this context, a complementary colour is one on the opposite end of the colour wheel
              */
             else if (command.equals("complement") || command.equals("complementary") || command.equals("opposite")) {
+                ItemStack item = player.getInventory().getItemInMainHand();
+                String itemType = item.getType().toString().toLowerCase();
+                BlockColour block = new BlockColour(plugin);
+                block.setColourFromHex(blockColours.getString(itemType));
+                this.blockComparisonList.clear();
                 int minDifference = 0;
                 int maxDifference = 100;
                 if(args.length > 2){
@@ -85,6 +91,32 @@ public class Commands implements CommandExecutor {
                 gui = new BlockGUI(plugin, slots, "§cComplementary Blocks");
                 gui.addBlocks(blockComparisonList);
                 gui.openInventory(player);
+            }
+
+            /*
+            Get gradient of x blocks between two given blocks
+             */
+            else if(command.equals("gradient")){
+                if(args.length > 2){
+                    int slotOne = Integer.parseInt(args[1])-1;
+                    int slotTwo = Integer.parseInt(args[2])-1;
+                    int size = 5;
+                    if(args.length > 3){
+                        size = Integer.parseInt(args[3]);
+                    }
+                    ItemStack itemOne = player.getInventory().getItem(slotOne);
+                    ItemStack itemTwo = player.getInventory().getItem(slotTwo);
+                    BlockColour blockOne = new BlockColour(plugin);
+                    BlockColour blockTwo = new BlockColour(plugin);
+                    blockOne.setColourFromHex(blockColours.getString(itemOne.getType().toString().toLowerCase()));
+                    blockTwo.setColourFromHex(blockColours.getString(itemTwo.getType().toString().toLowerCase()));
+                    BlockColourUtils blockColourUtils = new BlockColourUtils(plugin);
+                    blockComparisonList = blockColourUtils.getGradient(blockOne, blockTwo, size);
+                    int slots = calculateSlots(blockComparisonList);
+                    gui = new BlockGUI(plugin, slots, "Gradient");
+                    gui.addBlocks(blockComparisonList);
+                    gui.openInventory(player);
+                }
             }
         }
         blockComparisonList.clear();
