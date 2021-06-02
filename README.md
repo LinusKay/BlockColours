@@ -10,4 +10,5 @@ This currently includes:
 ![gif displaying get complementary blocks command](https://media.giphy.com/media/0POvxsHg8DFsRMIyO5/giphy.gif)
 
 To-Do
+* Add pagination for block GUI
 * Expand block colour data

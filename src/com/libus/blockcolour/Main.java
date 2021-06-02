@@ -8,5 +8,6 @@ public class Main extends JavaPlugin {
     public void onEnable() {
         getCommand("compareblock").setExecutor(new Commands(this));
         saveResource("blocks.yml", false);
+        saveResource("colours.yml", false);
     }
 }

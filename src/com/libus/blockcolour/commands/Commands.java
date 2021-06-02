@@ -1,6 +1,5 @@
 package com.libus.blockcolour.commands;
 
-import com.libus.blockcolour.models.BlockComparison;
 import com.libus.blockcolour.models.BlockColour;
 import com.libus.blockcolour.util.BlockGUI;
 import com.libus.blockcolour.Main;
@@ -18,7 +17,7 @@ public class Commands implements CommandExecutor {
 
     private final Main plugin;
 
-    private List<BlockComparison> blockComparisonList = new ArrayList<>();
+    private List<BlockColour> blockComparisonList = new ArrayList<>();
 
     public Commands(Main plugin) {
         this.plugin = plugin;
@@ -33,8 +32,8 @@ public class Commands implements CommandExecutor {
         File colourFile = new File(plugin.getDataFolder() + "/blocks.yml");
         YamlConfiguration blockColours = YamlConfiguration.loadConfiguration(colourFile);
 
-        BlockColour block = new BlockColour();
-        block.setColourFromString(blockColours.getString(itemType));
+        BlockColour block = new BlockColour(plugin);
+        block.setColourFromHex(blockColours.getString(itemType));
 
         if (args.length > 0) {
             String command = args[0];
@@ -46,21 +45,14 @@ public class Commands implements CommandExecutor {
             if (args.length > 2) {
                 maxDifference = Integer.parseInt(args[2]);
             }
+            BlockGUI gui;
             /*
             Find blocks with colours similar to held block
              */
-            BlockGUI gui;
             if (command.equals("similar")) {
                 blockComparisonList = block.getSimilarBlocks(blockColours, minDifference, maxDifference);
-                double blockCount = blockComparisonList.size();
-                int slots;
-                if(blockCount > 45){
-                    slots = 45;
-                }
-                else{
-                    slots = (int) (Math.ceil(blockCount/9) * 9);
-                }
-                gui = new BlockGUI(slots, "Similar Blocks");
+                int slots = calculateSlots(blockComparisonList);
+                gui = new BlockGUI(plugin, slots, "Similar Blocks");
                 gui.addBlocks(blockComparisonList);
                 gui.openInventory(player);
             }
@@ -68,17 +60,10 @@ public class Commands implements CommandExecutor {
             Find block with colours complementary to held block
             In this context, a complementary colour is one on the opposite end of the colour wheel
              */
-            else if(command.equals("complement") || command.equals("opposite")){
+            else if (command.equals("complement") || command.equals("opposite")) {
                 blockComparisonList = block.getComplementaryBlocks(blockColours, minDifference, maxDifference);
-                double blockCount = blockComparisonList.size();
-                int slots;
-                if(blockCount > 45){
-                    slots = 45;
-                }
-                else{
-                    slots = (int) (Math.ceil(blockCount/9) * 9);
-                }
-                gui = new BlockGUI(slots, "Complementary Blocks");
+                int slots = calculateSlots(blockComparisonList);
+                gui = new BlockGUI(plugin, slots, "Complementary Blocks");
                 gui.addBlocks(blockComparisonList);
                 gui.openInventory(player);
             }
@@ -86,4 +71,22 @@ public class Commands implements CommandExecutor {
         blockComparisonList.clear();
         return true;
     }
+
+    /**
+     * Calculate number of slots to initialise GUI with
+     *
+     * @param blockComparisonList list of blocks to be added into GUI
+     * @return Integer value to pass into GUI, multiple of 9 to match row of slots
+     */
+    public int calculateSlots(List<BlockColour> blockComparisonList) {
+        double blockCount = blockComparisonList.size();
+        int slots;
+        if (blockCount > 45) {
+            slots = 54;
+        } else {
+            slots = (int) (Math.ceil(blockCount / 9) * 9);
+        }
+        return slots;
+    }
+
 }

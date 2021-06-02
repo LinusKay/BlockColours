@@ -1,6 +1,7 @@
 package com.libus.blockcolour.util;
 
-import com.libus.blockcolour.models.BlockComparison;
+import com.libus.blockcolour.Main;
+import com.libus.blockcolour.models.BlockColour;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
@@ -11,30 +12,50 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-public class BlockGUI implements Listener {
-    private final Inventory inv;
+import static org.bukkit.Bukkit.getServer;
 
-    public BlockGUI(int size, String name) {
-        // Create a new inventory, with no owner (as this isn't a real inventory), a size of nine, called example
+public class BlockGUI implements Listener {
+    private Inventory inv;
+    private Main plugin;
+
+    /**
+     * Initialise GUI
+     *
+     * @param plugin Main plugin
+     * @param size Number of slots for GUI
+     * @param name Name to display above GUI
+     */
+    public BlockGUI(Main plugin, int size, String name) {
+        this.plugin = plugin;
         inv = Bukkit.createInventory(null, size, name);
+        getServer().getPluginManager().registerEvents(this, plugin);
     }
 
-    // You can open the inventory with this
+    /**
+     * Open GUI
+     *
+     * @param ent Entity which owns the inventory
+     */
     public void openInventory(final HumanEntity ent) {
         ent.openInventory(inv);
     }
 
-    // Check for clicks on items
+    /**
+     * Add item from GUI inventory to player inventory when clicked
+     *
+     * @param e InventoryClickEvent
+     */
     @EventHandler
     public void onInventoryClick(final InventoryClickEvent e) {
         if (e.getInventory() != inv) return;
 
         e.setCancelled(true);
-
         final ItemStack clickedItem = e.getCurrentItem();
 
         // verify current item is not null
@@ -42,11 +63,18 @@ public class BlockGUI implements Listener {
 
         final Player p = (Player) e.getWhoClicked();
 
-        // Using slots click is a best option for your inventory click's
-        p.sendMessage("You clicked at slot " + e.getRawSlot());
+        if(e.getRawSlot() < inv.getSize()) {
+            ItemStack item = new ItemStack(inv.getItem(e.getRawSlot()).getType(), 1);
+            item.setItemMeta(null);
+            p.getInventory().addItem(item);
+        }
     }
 
-    // Cancel dragging in our inventory
+    /**
+     * Disallow dragging from GUI inventory
+     *
+     * @param e InventoryDragEvent
+     */
     @EventHandler
     public void onInventoryClick(final InventoryDragEvent e) {
         if (e.getInventory() == inv) {
@@ -54,13 +82,23 @@ public class BlockGUI implements Listener {
         }
     }
 
-    public void addBlocks(List<BlockComparison> blockComparisons) {
-        blockComparisons.sort(Comparator.comparing(BlockComparison::getDifference));
-        for (BlockComparison item : blockComparisons) {
+    /**
+     * Add blocks to GUI
+     * Block lore will include the hex code and colour name matching the block
+     *
+     * @param blockComparisons
+     */
+    public void addBlocks(List<BlockColour> blockComparisons) {
+        blockComparisons.sort(Comparator.comparing(BlockColour::getDifference));
+        for (BlockColour block : blockComparisons) {
             try {
-                inv.addItem(new ItemStack(Material.getMaterial(item.getBlock().toUpperCase()), 1));
+                ItemStack item = new ItemStack(Material.getMaterial(block.getBlockName().toUpperCase()), 1);
+                ItemMeta meta = item.getItemMeta();
+                meta.setLore(Arrays.asList("Hex: " + block.getColourHex(), "Colour: " + block.getColourName()));
+                item.setItemMeta(meta);
+                inv.addItem(item);
             } catch (IllegalArgumentException e) {
-                System.out.println("Could not add block " + item.getBlock().toUpperCase());
+                System.out.println("Could not add block " + block.getBlockName().toUpperCase());
             }
         }
     }
