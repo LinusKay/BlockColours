@@ -6,6 +6,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.awt.Color;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class BlockColour {
@@ -139,14 +140,43 @@ public class BlockColour {
             Color secondColour = Color.decode(colourString);
 
             double difference = calculateColourDifference(this.colour, secondColour);
-            if (difference >= minDifference && difference < maxDifference) {
-
+            if (difference >= minDifference && difference <= maxDifference) {
                 BlockColour comparisonBlock = new BlockColour(plugin, block, secondColour, difference);
                 blockComparisonList.add(comparisonBlock);
             }
         }
+        blockComparisonList.sort(Comparator.comparing(BlockColour::getDifference));
         return this.blockComparisonList;
     }
+
+    /**
+     * Find blocks with similar colour
+     * Parses through list of blocks and their colours in blocks.yml
+     * Only returns blocks which have a colour difference within min/max tolerance range
+     * This range can be set using optional command arguments
+     * Excludes blocks with a difference in the given exclusion range
+     *
+     * @param blockList     list of similar blocks
+     * @param minDifference low end of similarity tolerance range
+     * @param maxDifference high end of similarity tolerance range
+     * @return list of similar blocks (can be empty)
+     */
+    public List<BlockColour> getSimilarBlocks(YamlConfiguration blockList, int minDifference, int maxDifference, int minExclusionDifference, int maxExclusionDifference) {
+        this.blockComparisonList.clear();
+        for (String block : blockList.getConfigurationSection("").getKeys(false)) {
+            String colourString = blockList.getString(block);
+            Color secondColour = Color.decode(colourString);
+
+            double difference = calculateColourDifference(this.colour, secondColour);
+            if (difference >= minDifference && difference <= maxDifference && (difference <= minExclusionDifference || difference >= maxExclusionDifference)) {
+                BlockColour comparisonBlock = new BlockColour(plugin, block, secondColour, difference);
+                blockComparisonList.add(comparisonBlock);
+            }
+        }
+        blockComparisonList.sort(Comparator.comparing(BlockColour::getDifference));
+        return this.blockComparisonList;
+    }
+
 
     /**
      * Find blocks with complementary/opposite colour
@@ -168,11 +198,43 @@ public class BlockColour {
             Color complementary = calculateComplementaryColour(this.colour);
 
             double difference = calculateColourDifference(complementary, secondColour);
-            if (difference >= minDifference && difference < maxDifference) {
+            if (difference >= minDifference && difference <= maxDifference) {
                 BlockColour comparisonBlock = new BlockColour(plugin, block, secondColour, difference);
                 blockComparisonList.add(comparisonBlock);
             }
         }
+        blockComparisonList.sort(Comparator.comparing(BlockColour::getDifference).reversed());
+        return this.blockComparisonList;
+    }
+
+
+    /**
+     * Find blocks with complementary/opposite colour
+     * Parses through list of blocks and their colours in blocks.yml
+     * Only returns blocks which have a colour difference within min/max tolerance range
+     * This range can be set using optional command arguments
+     * Excludes blocks with a difference in the given exclusion range
+     *
+     * @param blockList     list of similar blocks
+     * @param minDifference low end of similarity tolerance range
+     * @param maxDifference high end of similarity tolerance range
+     * @return list of similar blocks (can be empty)
+     */
+    public List<BlockColour> getComplementaryBlocks(YamlConfiguration blockList, int minDifference, int maxDifference, int minExclusionDifference, int maxExclusionDifference) {
+        this.blockComparisonList.clear();
+        for (String block : blockList.getConfigurationSection("").getKeys(false)) {
+            String colourString = blockList.getString(block);
+            Color secondColour = Color.decode(colourString);
+
+            Color complementary = calculateComplementaryColour(this.colour);
+
+            double difference = calculateColourDifference(complementary, secondColour);
+            if (difference >= minDifference && difference <= maxDifference && (difference <= minExclusionDifference || difference >= maxExclusionDifference)) {
+                BlockColour comparisonBlock = new BlockColour(plugin, block, secondColour, difference);
+                blockComparisonList.add(comparisonBlock);
+            }
+        }
+        blockComparisonList.sort(Comparator.comparing(BlockColour::getDifference).reversed());
         return this.blockComparisonList;
     }
 

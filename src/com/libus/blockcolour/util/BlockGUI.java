@@ -89,12 +89,11 @@ public class BlockGUI implements Listener {
      * @param blockComparisons
      */
     public void addBlocks(List<BlockColour> blockComparisons) {
-        blockComparisons.sort(Comparator.comparing(BlockColour::getDifference));
         for (BlockColour block : blockComparisons) {
             try {
                 ItemStack item = new ItemStack(Material.getMaterial(block.getBlockName().toUpperCase()), 1);
                 ItemMeta meta = item.getItemMeta();
-                meta.setLore(Arrays.asList("Hex: " + block.getColourHex(), "Colour: " + block.getColourName()));
+                meta.setLore(Arrays.asList("Hex: " + block.getColourHex(), "Colour: " + block.getColourName(), "Difference: " + (int) block.getDifference()));
                 item.setItemMeta(meta);
                 inv.addItem(item);
             } catch (IllegalArgumentException e) {

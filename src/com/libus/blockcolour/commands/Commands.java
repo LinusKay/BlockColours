@@ -44,10 +44,19 @@ public class Commands implements CommandExecutor {
              */
             if (command.equals("similar")) {
                 int minDifference = 0;
-                int maxDifference = 30;
-                if (args.length > 1) { minDifference = Integer.parseInt(args[1]); }
-                if (args.length > 2) { maxDifference = Integer.parseInt(args[2]); }
-                blockComparisonList = block.getSimilarBlocks(blockColours, minDifference, maxDifference);
+                int maxDifference = 100;
+                if(args.length > 2){
+                    minDifference = Integer.parseInt(args[1]);
+                    maxDifference = Integer.parseInt(args[2]);
+                }
+                if(args.length > 4){
+                    int minExclusionDifference = Integer.parseInt(args[3]);
+                    int maxExclusionDifference = Integer.parseInt(args[4]);
+                    blockComparisonList = block.getSimilarBlocks(blockColours, minDifference, maxDifference, minExclusionDifference, maxExclusionDifference);
+                }
+                else {
+                    blockComparisonList = block.getSimilarBlocks(blockColours, minDifference, maxDifference);
+                }
                 int slots = calculateSlots(blockComparisonList);
                 gui = new BlockGUI(plugin, slots, "§3Similar Blocks");
                 gui.addBlocks(blockComparisonList);
@@ -60,9 +69,18 @@ public class Commands implements CommandExecutor {
             else if (command.equals("complement") || command.equals("complementary") || command.equals("opposite")) {
                 int minDifference = 0;
                 int maxDifference = 100;
-                if (args.length > 1) { minDifference = Integer.parseInt(args[1]); }
-                if (args.length > 2) { maxDifference = Integer.parseInt(args[2]); }
-                blockComparisonList = block.getComplementaryBlocks(blockColours, minDifference, maxDifference);
+                if(args.length > 2){
+                    minDifference = Integer.parseInt(args[1]);
+                    maxDifference = Integer.parseInt(args[2]);
+                }
+                if(args.length > 4){
+                    int minExclusionDifference = Integer.parseInt(args[3]);
+                    int maxExclusionDifference = Integer.parseInt(args[4]);
+                    blockComparisonList = block.getComplementaryBlocks(blockColours, minDifference, maxDifference, minExclusionDifference, maxExclusionDifference);
+                }
+                else {
+                    blockComparisonList = block.getComplementaryBlocks(blockColours, minDifference, maxDifference);
+                }
                 int slots = calculateSlots(blockComparisonList);
                 gui = new BlockGUI(plugin, slots, "§cComplementary Blocks");
                 gui.addBlocks(blockComparisonList);
@@ -87,6 +105,7 @@ public class Commands implements CommandExecutor {
         } else {
             slots = (int) (Math.ceil(blockCount / 9) * 9);
         }
+        if(slots == 0){slots = 9;}
         return slots;
     }
 
