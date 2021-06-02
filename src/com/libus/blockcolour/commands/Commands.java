@@ -37,22 +37,19 @@ public class Commands implements CommandExecutor {
 
         if (args.length > 0) {
             String command = args[0];
-            int minDifference = 0;
-            int maxDifference = 30;
-            if (args.length > 1) {
-                minDifference = Integer.parseInt(args[1]);
-            }
-            if (args.length > 2) {
-                maxDifference = Integer.parseInt(args[2]);
-            }
+
             BlockGUI gui;
             /*
             Find blocks with colours similar to held block
              */
             if (command.equals("similar")) {
+                int minDifference = 0;
+                int maxDifference = 30;
+                if (args.length > 1) { minDifference = Integer.parseInt(args[1]); }
+                if (args.length > 2) { maxDifference = Integer.parseInt(args[2]); }
                 blockComparisonList = block.getSimilarBlocks(blockColours, minDifference, maxDifference);
                 int slots = calculateSlots(blockComparisonList);
-                gui = new BlockGUI(plugin, slots, "Similar Blocks");
+                gui = new BlockGUI(plugin, slots, "§3Similar Blocks");
                 gui.addBlocks(blockComparisonList);
                 gui.openInventory(player);
             }
@@ -60,10 +57,14 @@ public class Commands implements CommandExecutor {
             Find block with colours complementary to held block
             In this context, a complementary colour is one on the opposite end of the colour wheel
              */
-            else if (command.equals("complement") || command.equals("opposite")) {
+            else if (command.equals("complement") || command.equals("complementary") || command.equals("opposite")) {
+                int minDifference = 0;
+                int maxDifference = 100;
+                if (args.length > 1) { minDifference = Integer.parseInt(args[1]); }
+                if (args.length > 2) { maxDifference = Integer.parseInt(args[2]); }
                 blockComparisonList = block.getComplementaryBlocks(blockColours, minDifference, maxDifference);
                 int slots = calculateSlots(blockComparisonList);
-                gui = new BlockGUI(plugin, slots, "Complementary Blocks");
+                gui = new BlockGUI(plugin, slots, "§cComplementary Blocks");
                 gui.addBlocks(blockComparisonList);
                 gui.openInventory(player);
             }
