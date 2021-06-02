@@ -1,5 +1,6 @@
-package com.libus.blockcolour;
+package com.libus.blockcolour.util;
 
+import com.libus.blockcolour.models.BlockComparison;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
@@ -11,16 +12,15 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Comparator;
+import java.util.List;
+
 public class BlockGUI implements Listener {
     private final Inventory inv;
 
     public BlockGUI(int size, String name) {
         // Create a new inventory, with no owner (as this isn't a real inventory), a size of nine, called example
         inv = Bukkit.createInventory(null, size, name);
-    }
-
-    public void addItem(ItemStack item){
-        inv.addItem(item);
     }
 
     // You can open the inventory with this
@@ -51,6 +51,17 @@ public class BlockGUI implements Listener {
     public void onInventoryClick(final InventoryDragEvent e) {
         if (e.getInventory() == inv) {
             e.setCancelled(true);
+        }
+    }
+
+    public void addBlocks(List<BlockComparison> blockComparisons) {
+        blockComparisons.sort(Comparator.comparing(BlockComparison::getDifference));
+        for (BlockComparison item : blockComparisons) {
+            try {
+                inv.addItem(new ItemStack(Material.getMaterial(item.getBlock().toUpperCase()), 1));
+            } catch (IllegalArgumentException e) {
+                System.out.println("Could not add block " + item.getBlock().toUpperCase());
+            }
         }
     }
 }
