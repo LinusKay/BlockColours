@@ -57,8 +57,12 @@ Generate a gradient of blocks between two given blocks. If no arguments given, w
 */blockcolour gradient 2 7 9* - Demonstration of a 9-block gradient, between blocks in slot 2 and 7.
 
 \
-![image displaying gradient example](https://i.imgur.com/rclF645.png)
-*/blockcolour gradient 1 3 23* - Demonstration of a 23-block gradient, between blocks in slot 1 and 3.
+![image displaying gradient example](https://i.imgur.com/QYwAtgC.png)
+*/blockcolour gradient 15* - Demonstration of a 15-block gradient, between blocks in off-hand and main-hand.
+
+\
+![image displaying gradient example](https://i.imgur.com/gnRRVQq.png)
+*/blockcolour gradient green_wool red_concrete 23* - Demonstration of a 23-block gradient, between green wool and red concrete.
 
 ---
 
