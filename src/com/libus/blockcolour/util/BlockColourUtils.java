@@ -11,7 +11,7 @@ import java.util.List;
 
 public class BlockColourUtils {
 
-    private Main plugin;
+    private final Main plugin;
 
     public BlockColourUtils(Main plugin) {
         this.plugin = plugin;
@@ -22,7 +22,6 @@ public class BlockColourUtils {
         Color colorTwo = blockTwo.getColour();
         List<BlockColour> blockColourList = new ArrayList<>();
         double pieceSize = (100/(size-1))/100;
-        System.out.println("start: " + colorOne.getRed() + "," + colorOne.getGreen() + "," + colorOne.getBlue());
         File colourFile = new File(plugin.getDataFolder() + "/blocks_full_only.yml");
         YamlConfiguration blocks = YamlConfiguration.loadConfiguration(colourFile);
         for(int i = 0; i < size; i++){
@@ -56,7 +55,6 @@ public class BlockColourUtils {
             BlockColour blockColour = new BlockColour(plugin, blockType, newColour, 0);
             blockColourList.add(blockColour);
         }
-        System.out.println("end: " + colorTwo.getRed() + "," + colorTwo.getGreen() + "," + colorTwo.getBlue());
         return blockColourList;
     }
 

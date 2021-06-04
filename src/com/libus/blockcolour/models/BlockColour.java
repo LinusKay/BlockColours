@@ -14,7 +14,7 @@ import java.util.List;
  */
 public class BlockColour {
 
-    private Main plugin;
+    private final Main plugin;
 
     private Color colour;
     private String block;
