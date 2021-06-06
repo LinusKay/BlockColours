@@ -1,6 +1,7 @@
 package com.libus.blockcolour.models;
 
 import com.libus.blockcolour.Main;
+import com.libus.blockcolour.util.BlockColourUtils;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.awt.*;
@@ -22,6 +23,8 @@ public class BlockColour {
 
     private final List<BlockColour> blockComparisonList = new ArrayList<>();
 
+    private BlockColourUtils blockColourUtils;
+
     /**
      * Initialise empty object
      *
@@ -29,6 +32,7 @@ public class BlockColour {
      */
     public BlockColour(Main plugin) {
         this.plugin = plugin;
+        this.blockColourUtils = new BlockColourUtils(plugin);
     }
 
     /**
@@ -123,6 +127,7 @@ public class BlockColour {
      */
     public void setColourFromHex(String hexCode) {
         this.colour = Color.decode(hexCode);
+
     }
 
     /**
@@ -142,7 +147,7 @@ public class BlockColour {
             String colourString = blockList.getString(block);
             Color secondColour = Color.decode(colourString);
 
-            double difference = calculateColourDifference(this.colour, secondColour);
+            double difference = blockColourUtils.calculateColourDifference(this.colour, secondColour);
             if (difference >= minDifference && difference <= maxDifference) {
                 BlockColour comparisonBlock = new BlockColour(plugin, block, secondColour, difference);
                 blockComparisonList.add(comparisonBlock);
@@ -170,7 +175,7 @@ public class BlockColour {
             String colourString = blockList.getString(block);
             Color secondColour = Color.decode(colourString);
 
-            double difference = calculateColourDifference(this.colour, secondColour);
+            double difference = blockColourUtils.calculateColourDifference(this.colour, secondColour);
             if (difference >= minDifference && difference <= maxDifference && (difference <= minExclusionDifference || difference >= maxExclusionDifference)) {
                 BlockColour comparisonBlock = new BlockColour(plugin, block, secondColour, difference);
                 blockComparisonList.add(comparisonBlock);
@@ -198,9 +203,9 @@ public class BlockColour {
             String colourString = blockList.getString(block);
             Color secondColour = Color.decode(colourString);
 
-            Color complementary = calculateComplementaryColour(this.colour);
+            Color complementary = blockColourUtils.calculateComplementaryColour(this.colour);
 
-            double difference = calculateColourDifference(complementary, secondColour);
+            double difference = blockColourUtils.calculateColourDifference(complementary, secondColour);
             if (difference >= minDifference && difference <= maxDifference) {
                 BlockColour comparisonBlock = new BlockColour(plugin, block, secondColour, difference);
                 blockComparisonList.add(comparisonBlock);
@@ -229,9 +234,9 @@ public class BlockColour {
             String colourString = blockList.getString(block);
             Color secondColour = Color.decode(colourString);
 
-            Color complementary = calculateComplementaryColour(this.colour);
+            Color complementary = blockColourUtils.calculateComplementaryColour(this.colour);
 
-            double difference = calculateColourDifference(complementary, secondColour);
+            double difference = blockColourUtils.calculateColourDifference(complementary, secondColour);
             if (difference >= minDifference && difference <= maxDifference && (difference <= minExclusionDifference || difference >= maxExclusionDifference)) {
                 BlockColour comparisonBlock = new BlockColour(plugin, block, secondColour, difference);
                 blockComparisonList.add(comparisonBlock);
@@ -241,43 +246,6 @@ public class BlockColour {
         return this.blockComparisonList;
     }
 
-    /**
-     * Calculate difference between two Color objects
-     * The lower the value, the more similar two colours are, with 0 being an exact match
-     * The higher the value, the more different two colours are, with 255 being most dissimilar
-     * Calculation based upon code by Hovercraft Full Of Eels on https://stackoverflow.com/a/8688777
-     *
-     * @param firstColour  Color object to compare against
-     * @param secondColour Color object to compare to original colour
-     * @return numerical colour difference
-     */
-    private double calculateColourDifference(Color firstColour, Color secondColour) {
-        int r1 = firstColour.getRed();
-        int g1 = firstColour.getGreen();
-        int b1 = firstColour.getBlue();
-        int r2 = secondColour.getRed();
-        int g2 = secondColour.getGreen();
-        int b2 = secondColour.getBlue();
-        return Math.sqrt(Math.pow(r1 - r2, 2) + Math.pow(g1 - g2, 2) + Math.pow(b1 - b2, 2));
-    }
 
-    /**
-     * Calculate complementary colour for given colour
-     * Complementary colour refers to the colour on the opposite side of the colour wheel
-     * Calculations are based on code by Poypoyan on https://stackoverflow.com/a/37675777
-     *
-     * @param firstColour colour to find complement to
-     * @return Color object of complementary colour value
-     */
-    private Color calculateComplementaryColour(Color firstColour) {
-        int r1 = firstColour.getRed();
-        int g1 = firstColour.getGreen();
-        int b1 = firstColour.getBlue();
-        int calculation = Math.max(Math.max(r1, g1), b1) + Math.min(Math.min(r1, g1), b1);
-        int r2 = calculation - r1;
-        int g2 = calculation - g1;
-        int b2 = calculation - b1;
-        return new Color(r2, g2, b2);
-    }
 
 }

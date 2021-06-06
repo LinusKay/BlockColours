@@ -5,13 +5,19 @@ import com.libus.blockcolour.models.BlockColour;
 import com.libus.blockcolour.util.BlockColourUtils;
 import com.libus.blockcolour.util.BlockGUI;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,7 +70,6 @@ public class Commands implements CommandExecutor {
                     gui.addBlocks(blockComparisonList);
                     gui.openInventory(player);
                 }
-
             /*
             Find block with colours complementary to held block
             In this context, a complementary colour is one on the opposite end of the colour wheel
@@ -93,8 +98,6 @@ public class Commands implements CommandExecutor {
                     gui.addBlocks(blockComparisonList);
                     gui.openInventory(player);
                 }
-
-
             /*
             Get gradient of x blocks between two given blocks
              */
@@ -163,6 +166,31 @@ public class Commands implements CommandExecutor {
                     } else {
                         player.sendMessage("please specify gradient start/end blocks");
                     }
+                }
+
+            /*
+            Calculate most common colours in given image
+             */
+                case "image" -> {
+                    String imageURL = args[1];
+                    URL url = null;
+                    BufferedImage image = null;
+                    try {
+                        url = new URL(imageURL);
+                    } catch (MalformedURLException e) {
+                        e.printStackTrace();
+                    }
+                    try {
+                        image = ImageIO.read(url);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    BlockColourUtils blockColourUtils = new BlockColourUtils(plugin);
+                    blockComparisonList = blockColourUtils.getHexColor(image);
+                    int slots = calculateSlots(blockComparisonList);
+                    gui = new BlockGUI(plugin, slots, "Image Colours");
+                    gui.addBlocks(blockComparisonList);
+                    gui.openInventory(player);
                 }
             }
         }
