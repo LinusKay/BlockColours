@@ -16,9 +16,6 @@ This currently includes:
 Find blocks with a similar colour base to the held block. The min/max Difference parameters allow you to search for blocks within a given difference range. The min/max exclusion parameters allow you to exclude a given range from the search.
 
 \
-![gif displaying get similar blocks command](https://media.giphy.com/media/K9IoW3iFt7SLxymwkg/giphy.gif)
-
-\
 ![image displaying limited similar search](https://i.imgur.com/AF9r43q.png)
 */blockcolour similar 0 30* - Demonstration of a limited search, finding only blocks with a difference value between 0 and 30.
 
@@ -37,9 +34,6 @@ Find blocks with a similar colour base to the held block. The min/max Difference
 
 Find blocks with a colour base opposing the held block. The min/max Difference parameters allow you to search for blocks within a given difference range. The min/max exclusion parameters allow you to exclude a given range from the search.
 Rather than displaying blocks based upon how similar they are to the held block, blocks are displayed based upon how similar they are to the held block's opposite colour.
-
-\
-![gif displaying get complementary blocks command](https://media.giphy.com/media/ltM8VBKuRMNxF5uGC9/giphy.gif)
 
 \
 ![image displaying limited complementary search](https://i.imgur.com/fM1UPxN.png)
