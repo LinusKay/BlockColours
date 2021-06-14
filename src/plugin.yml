@@ -4,7 +4,7 @@ author: libus
 main: com.libus.blockcolour.Main
 api-version: 1.16
 commands:
-  compareblock:
+  blockcolour:
     description: Get and compare block colour
-    usage: /compareblock <similar|different|complement>
-    aliases: [cb]
+    usage: /blockcolour <similar|different|complement>
+    aliases: [bc]

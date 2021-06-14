@@ -4,6 +4,7 @@ import com.libus.blockcolour.Main;
 import com.libus.blockcolour.models.BlockColour;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -14,15 +15,17 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.io.File;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
+import java.util.ListIterator;
 
 import static org.bukkit.Bukkit.getServer;
 
 public class BlockGUI implements Listener {
     private Inventory inv;
     private Main plugin;
+    private BlockColourUtils blockColourUtils = null;
 
     /**
      * Initialise GUI
@@ -35,6 +38,7 @@ public class BlockGUI implements Listener {
         this.plugin = plugin;
         inv = Bukkit.createInventory(null, size, name);
         getServer().getPluginManager().registerEvents(this, plugin);
+        blockColourUtils = new BlockColourUtils(plugin);
     }
 
     /**
@@ -90,14 +94,24 @@ public class BlockGUI implements Listener {
      */
     public void addBlocks(List<BlockColour> blockComparisons) {
         for (BlockColour block : blockComparisons) {
-            try {
-                ItemStack item = new ItemStack(Material.getMaterial(block.getBlockName().toUpperCase()), 1);
-                ItemMeta meta = item.getItemMeta();
-                meta.setLore(Arrays.asList("Hex: " + block.getColourHex(), "Colour: " + block.getColourName(), "Difference: " + (int) block.getDifference()));
-                item.setItemMeta(meta);
-                inv.addItem(item);
-            } catch (IllegalArgumentException e) {
-                System.out.println("Could not add block " + block.getBlockName().toUpperCase());
+            File configFile = new File(plugin.getDataFolder() + "/config.yml");
+            YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile);
+            List<String> blacklist = config.getStringList("blacklist");
+
+            for(int i = 0; i < blacklist.size(); i++){
+                blacklist.set(i, blacklist.get(i).toUpperCase());
+            }
+
+            if(block.getBlockMaterial() != null && !blacklist.contains(block.getBlockMaterial().toString().toUpperCase())) {
+                try {
+                    ItemStack item = new ItemStack(block.getBlockMaterial(), 1);
+                    ItemMeta meta = item.getItemMeta();
+                    meta.setLore(Arrays.asList("Hex: " + block.getColourHex(), "Colour: " + blockColourUtils.getClosestColourName(block), "Difference: " + (int) block.getDifference()));
+                    item.setItemMeta(meta);
+                    inv.addItem(item);
+                } catch (IllegalArgumentException e) {
+                    System.out.println("Could not add block " + block.getBlockMaterial());
+                }
             }
         }
     }

@@ -21,8 +21,11 @@ public class Commands implements CommandExecutor {
 
     private List<BlockColour> blockComparisonList = new ArrayList<>();
 
+    private BlockColourUtils blockColourUtils = null;
+
     public Commands(Main plugin) {
         this.plugin = plugin;
+        this.blockColourUtils = new BlockColourUtils(plugin);
     }
 
     @Override
@@ -45,6 +48,7 @@ public class Commands implements CommandExecutor {
                     ItemStack item = player.getInventory().getItemInMainHand();
                     String itemType = item.getType().toString().toLowerCase();
                     BlockColour block = new BlockColour(plugin);
+                    block.setMaterial(item.getType());
                     block.setColourFromHex(blockColours.getString(itemType));
                     int minDifference = 0;
                     int maxDifference = 100;
@@ -55,9 +59,9 @@ public class Commands implements CommandExecutor {
                     if (args.length > 4) {
                         int minExclusionDifference = Integer.parseInt(args[3]);
                         int maxExclusionDifference = Integer.parseInt(args[4]);
-                        blockComparisonList = block.getSimilarBlocks(blockColours, minDifference, maxDifference, minExclusionDifference, maxExclusionDifference);
+                        blockComparisonList = blockColourUtils.getSimilarBlocks(block, blockColours, minDifference, maxDifference, minExclusionDifference, maxExclusionDifference);
                     } else {
-                        blockComparisonList = block.getSimilarBlocks(blockColours, minDifference, maxDifference);
+                        blockComparisonList = blockColourUtils.getSimilarBlocks(block, blockColours, minDifference, maxDifference);
                     }
                     int slots = calculateSlots(blockComparisonList);
                     gui = new BlockGUI(plugin, slots, "§3Similar Blocks");
@@ -73,6 +77,7 @@ public class Commands implements CommandExecutor {
                     ItemStack item = player.getInventory().getItemInMainHand();
                     String itemType = item.getType().toString().toLowerCase();
                     BlockColour block = new BlockColour(plugin);
+                    block.setMaterial(item.getType());
                     block.setColourFromHex(blockColours.getString(itemType));
                     this.blockComparisonList.clear();
                     int minDifference = 0;
@@ -84,9 +89,9 @@ public class Commands implements CommandExecutor {
                     if (args.length > 4) {
                         int minExclusionDifference = Integer.parseInt(args[3]);
                         int maxExclusionDifference = Integer.parseInt(args[4]);
-                        blockComparisonList = block.getComplementaryBlocks(blockColours, minDifference, maxDifference, minExclusionDifference, maxExclusionDifference);
+                        blockComparisonList = blockColourUtils.getComplementaryBlocks(block, blockColours, minDifference, maxDifference, minExclusionDifference, maxExclusionDifference);
                     } else {
-                        blockComparisonList = block.getComplementaryBlocks(blockColours, minDifference, maxDifference);
+                        blockComparisonList = blockColourUtils.getComplementaryBlocks(block, blockColours, minDifference, maxDifference);
                     }
                     int slots = calculateSlots(blockComparisonList);
                     gui = new BlockGUI(plugin, slots, "§cComplementary Blocks");
@@ -117,43 +122,42 @@ public class Commands implements CommandExecutor {
                         if (inputOne.matches("-?\\d+(\\.\\d+)?") && inputTwo.matches("-?\\d+(\\.\\d+)?")) {
                             int slotOne = Integer.parseInt(args[1]);
                             int slotTwo = Integer.parseInt(args[2]);
-                            if(slotOne > 0 && slotOne < 10 && slotTwo > 0 && slotTwo < 10) {
-                                itemOne = player.getInventory().getItem(slotOne-1);
-                                itemTwo = player.getInventory().getItem(slotTwo-1);
-                            }
-                            else{
+                            if (slotOne > 0 && slotOne < 10 && slotTwo > 0 && slotTwo < 10) {
+                                itemOne = player.getInventory().getItem(slotOne - 1);
+                                itemTwo = player.getInventory().getItem(slotTwo - 1);
+                            } else {
                                 player.sendMessage("Slot number must be between 1 - 9");
                                 return true;
                             }
                         } else {
                             Material materialOne = Material.getMaterial(inputOne);
                             Material materialTwo = Material.getMaterial(inputTwo);
-                            if(materialOne != null && materialTwo != null) {
+                            if (materialOne != null && materialTwo != null) {
                                 itemOne = new ItemStack(materialOne, 1);
                                 itemTwo = new ItemStack(materialTwo, 1);
-                            }
-                            else{
+                            } else {
                                 player.sendMessage("Invalid block type");
                                 return true;
                             }
                         }
                         if (args.length > 3) {
-                            if(args[3].matches("-?\\d+(\\.\\d+)?")) {
+                            if (args[3].matches("-?\\d+(\\.\\d+)?")) {
                                 size = Integer.parseInt(args[3]);
-                            }
-                            else{
+                            } else {
                                 player.sendMessage("Size must be a number");
                                 return true;
                             }
                         }
                     }
-                    if(size > 54){
+                    if (size > 54) {
                         player.sendMessage("Size must be a number less than 55");
                         return true;
                     }
                     if (itemOne != null && itemOne.getType() != Material.AIR && itemTwo != null && itemTwo.getType() != Material.AIR) {
                         blockOne.setColourFromHex(blockColours.getString(itemOne.getType().toString().toLowerCase()));
+                        blockOne.setMaterial(itemOne.getType());
                         blockTwo.setColourFromHex(blockColours.getString(itemTwo.getType().toString().toLowerCase()));
+                        blockOne.setMaterial(itemTwo.getType());
                         BlockColourUtils blockColourUtils = new BlockColourUtils(plugin);
                         blockComparisonList = blockColourUtils.getGradient(blockTwo, blockOne, size);
                         int slots = calculateSlots(blockComparisonList);

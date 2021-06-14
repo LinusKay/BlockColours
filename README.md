@@ -4,11 +4,13 @@ A plugin that allows players to perform operations revolving around the colours 
 This currently includes:
 * Find blocks with similar colours
 * Find blocks with complementary colours
+* Generate gradients of any size between two blocks
+* Freely editable source data, meaning you can customise the colour mapping to your liking by adding, removing or editing colours.
+* Blacklist unwanted blocks
 
-All data for block colours and colour names is freely available to edit in both the blocks.yml and colours.yml files respectively. This allows you to tweak the colour values for specific blocks, and add/change the preset colour names.
 
 ## Commands
-
+### Similar Blocks
 **/blockcolour similar [\<minDifference> \<maxDifference>] [\<minExclusion> \<maxExclusion>]** 
 
 Find blocks with a similar colour base to the held block. The min/max Difference parameters allow you to search for blocks within a given difference range. The min/max exclusion parameters allow you to exclude a given range from the search.
@@ -29,6 +31,7 @@ Find blocks with a similar colour base to the held block. The min/max Difference
 
 ---
 
+### Complementary/Opposite Blocks
 \
 **/blockcolour <complementary|complement|opposite> [\<minDifference> \<maxDifference>] [\<minExclusion> \<maxExclusion>]** 
 
@@ -48,6 +51,7 @@ Rather than displaying blocks based upon how similar they are to the held block,
 
 ---
 
+### Gradients
 **/blockcolor gradient [\<startingSlot> \<endingSlot> | \<startingBlockName> \<endingBlockName>] [gradientSize]**
 
 Generate a gradient of blocks between two given blocks. If no arguments given, will create gradient between off-hand and main hand blocks. Alternatively, player can specify the hotbar slots the two items they wish to use are in, or specify two blocks by name. The gradientSize parameter specifies how many blocks long the gradient should be. Gradients use a separate file, consisting of only full blocks.
@@ -65,11 +69,47 @@ Generate a gradient of blocks between two given blocks. If no arguments given, w
 */blockcolour gradient green_wool red_concrete 23* - Demonstration of a 23-block gradient, between green wool and red concrete.
 
 ---
+## Config
 
+```yaml
+# blacklist allows you to disallow certain blocks from appearing in any GUI
+# 
+blacklist:
+  - STONE
+  - BEDROCK
+  - diamond_ore
+  - yellow_concrete
+  ```
+
+---
+## Editing Data
+All of the source data used to map blocks to their respective colours is open for editing locally. This allows you to add support for additional blocks, remove unwanted blocks, or change the hexcode or colour name given to a block. In the current version, this data is all stored in YAML format (keep in mind that this may change in a later version).
+To edit data, navigate to the 'blockcolours' folder, inside your server plugin folder, after having run the server at least once. There are a number of .yml files, each with a different purpose/scope. The plugin should have no issue handling data edits on the fly, however if you run into issues, try restarting the server to reload the config files.
+* **blocks.yml** - contains colour mapping for most blocks
+```yaml
+acacia_door: "#c8744c"
+acacia_leaves: "#8b8484"
+acacia_log: "#6c645c"
+...
+```
+* **blocks_full_only.yml** - contains colour mapping for full blocks only (complete cubes). This is used in gradient generation.
+```yaml
+acacia_leaves: "#8b8484"
+acacia_log: "#6c645c"
+acacia_planks: "#a15431"
+...
+```
+* **colours.yml** - contains colour name data, used in matching each block's colour to it's respective name. Blocks are paired with the closest hexcode/name to their base colour.
+```yaml
+b0171f: "indian red"
+dc143c: "crimson"
+ffb6c1: "lightpink"
+...
+```
+---
 \
 To-Do
 * Add pagination for block GUI
-* Add blacklisting for specific blocks
-* Add option to not display item lore
 * Expand block colour data
 * Consider conversion of calculations from RGB data to HSL to better handle shades (black/white)
+* Implement image colour parsing

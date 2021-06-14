@@ -1,0 +1,8 @@
+blacklist:
+  - STONE
+  - BEDROCK
+  - diamond_ore
+  - yellow_concrete
+
+
+
